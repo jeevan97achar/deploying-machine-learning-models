@@ -55,7 +55,7 @@ jobs:
           name: Deploy to Railway App (You must set RAILWAY_TOKEN env var)
           command: |
             cd section-07-ci-and-publishing/house-prices-api
-            railway link 76ca7a97-d185-4955-8d74-ae200b326399 lamentable-competition
+            railway link 0bb8efff-76ca-475a-a85c-c6ec1c28be83 piquant-water
             railway up --detach
 
   section_07_test_and_upload_regression_model:
