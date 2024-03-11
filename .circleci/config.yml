@@ -30,9 +30,9 @@ fetch_data: &fetch_data
       ./scripts/fetch_kaggle_dataset.sh
 
 jobs:
-  section_07_test_app:
+  test_app:
     <<: *defaults
-    working_directory: ~/project/section-07-ci-and-publishing/house-prices-api
+    working_directory: ~/project/ci-and-publishing/house-prices-api
     steps:
       - checkout:
           path: ~/project
@@ -42,7 +42,7 @@ jobs:
           command: |
             tox
 
-  section_07_deploy_app_to_railway:
+  deploy_app_to_railway:
     <<: *defaults
     steps:
       - checkout:
@@ -54,13 +54,13 @@ jobs:
       - run:
           name: Deploy to Railway App (You must set RAILWAY_TOKEN env var)
           command: |
-            cd section-07-ci-and-publishing/house-prices-api
+            cd ci-and-publishing/house-prices-api
             railway link 0bb8efff-76ca-475a-a85c-c6ec1c28be83 piquant-water
             railway up --detach
 
-  section_07_test_and_upload_regression_model:
+  test_and_upload_regression_model:
     <<: *defaults
-    working_directory: ~/project/section-07-ci-and-publishing/model-package
+    working_directory: ~/project/ci-and-publishing/model-package
     steps:
       - checkout:
           path: ~/project
@@ -79,7 +79,7 @@ jobs:
             tox -e publish_model
 
 
-  section_08_deploy_app_container_via_railway:
+  deploy_app_container_via_railway:
     <<: *defaults
     steps:
       - setup_remote_docker:
@@ -94,7 +94,7 @@ jobs:
       - run:
           name: Build and run Dockerfile (see https://docs.railway.app/deploy/dockerfiles)
           command: |
-            cd section-08-deploying-with-containers
+            cd deploying-with-containers
             railway link 0bb8efff-76ca-475a-a85c-c6ec1c28be83 piquant-water
             railway up --detach
 
@@ -271,20 +271,20 @@ workflows:
   version: 2
   deploy_pipeline:
     jobs:
-      - section_07_test_app
-      - section_07_deploy_app_to_railway:
+      - test_app
+      - deploy_app_to_railway:
           requires:
-            - section_07_test_app
+            - test_app
           filters:
             branches:
               only:
                 - master
                 - demo
       # upload after git tags are created
-      - section_07_test_and_upload_regression_model:
+      - test_and_upload_regression_model:
           <<: *tags_only
 
-      - section_08_deploy_app_container_via_railway:
+      - deploy_app_container_via_railway:
          filters:
            branches:
              only:
